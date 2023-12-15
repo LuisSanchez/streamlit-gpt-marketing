@@ -1,0 +1,5 @@
+.gpt_mkt
+__pycache__/
+.DS_Store
+secrets.toml
+.env
