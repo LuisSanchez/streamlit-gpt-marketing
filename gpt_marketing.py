@@ -17,14 +17,20 @@ One of your main features will be to study the given URL in the prompt or to ana
 """
 
 with st.sidebar:
-    openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
-    url = st.text_input("Type the URL of the image you want to be analyzed", key="url_key")
+    openai_api_key = st.text_input(
+        "OpenAI API Key", key="chatbot_api_key", type="password"
+    )
+    url = st.text_input(
+        "Type the URL of the image you want to be analyzed", key="url_key"
+    )
 
 st.title("🧙‍♀️ Marketing Advisor")
-st.caption("🚀 What are innovative trends in Digital Marketing?")
+st.caption("🚀 Check the attached image and tell me what can be done to improve the UX?")
 
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+    st.session_state["messages"] = [
+        {"role": "assistant", "content": "How can I help you?"}
+    ]
 
 for msg in st.session_state.messages:
     if msg["role"] in ["user", "assistant"]:
@@ -36,6 +42,9 @@ if prompt := st.chat_input():
     if not openai_api_key:
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
+    if not url:
+        st.info("Please add an image URL to continue.")
+        st.stop()
 
     client = OpenAI(api_key=openai_api_key)
 
@@ -46,18 +55,18 @@ if prompt := st.chat_input():
             {"type": "text", "text": prompt},
             {
                 "type": "image_url",
-                "image_url": {
-                    "url": url
-                },
+                "image_url": {"url": url},
             },
         ],
     }
     st.session_state.messages.append(user_prompt)
     st.chat_message("user").write(prompt)
-    
-    response = client.chat.completions.create(model=model, messages=st.session_state.messages, max_tokens=1024)
+
+    response = client.chat.completions.create(
+        model=model, messages=st.session_state.messages, max_tokens=1024
+    )
 
     msg = response.choices[0].message.content
-    
+
     st.session_state.messages.append({"role": "assistant", "content": msg})
     st.chat_message("assistant").write(msg)
